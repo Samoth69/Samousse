@@ -42,7 +42,11 @@ namespace Samousse
             // Context & Slash commands can be automatically registered, but this process needs to happen after the client enters the READY state.
             // Since Global Commands take around 1 hour to register, we should use a test guild to instantly update and test our commands.
 #if DEBUG
-            await _handler.RegisterCommandsToGuildAsync(883418664777437224, true);
+            // crashtest samousse
+            //await _handler.RegisterCommandsToGuildAsync(883418664777437224, true);
+
+            // snap
+            await _handler.RegisterCommandsToGuildAsync(940731520488988764, true);
 #else
             await _handler.RegisterCommandsGloballyAsync(true);
 #endif

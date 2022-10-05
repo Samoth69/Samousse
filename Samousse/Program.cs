@@ -21,6 +21,10 @@ namespace Samousse
 
             _serviceProvider = new ServiceCollection()
                 .AddSingleton(new ConfigLoader().Config)
+                .AddSingleton(new DiscordSocketConfig
+                {
+                    GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
+                })
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
                 .AddSingleton<InteractionHandler>()
