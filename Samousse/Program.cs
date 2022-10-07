@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Samousse.Modules.Power4;
 using Serilog;
 using Serilog.Events;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Samousse
 {

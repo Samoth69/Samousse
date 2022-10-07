@@ -66,7 +66,7 @@ namespace Samousse.Modules.Power4
             }
 
             _channel.SendMessageAsync($"Ready to play\n\n" +
-                $"How to play: type 0 to 6 to place your pawn in the corresponding column\n\n" +
+                $"How to play: type from 1 to 7 to place your pawn in the corresponding column\n\n" +
                 $"It's {(NextPlayer == EBoardPawn.Yellow ? _yellowPlayer.Mention : _redPlayer.Mention)} turn");
         }
 
@@ -81,6 +81,9 @@ namespace Samousse.Modules.Power4
 
             if (int.TryParse(msg, out var column))
             {
+                // on user side, we are working from 1 to 7, but on our side, we are working from 0 to 6
+                column--;
+
                 if (column < 0 || column > 6)
                 {
                     await _channel.SendMessageAsync($"Invalid column {user.Mention}");
@@ -139,6 +142,7 @@ namespace Samousse.Modules.Power4
                 }
                 sb.AppendLine();
             }
+            sb.Append(":one::two::three::four::five::six::seven:");
             await _channel.SendMessageAsync(sb.ToString());
         }
     }

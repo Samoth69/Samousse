@@ -8,6 +8,7 @@ namespace Samousse.Modules.Power4
     {
         private readonly InteractionHandler _handler;
         private readonly DiscordSocketClient _client;
+        private readonly bool _isDev;
 
         /// <summary>
         /// key: ThreadId
@@ -23,6 +24,12 @@ namespace Samousse.Modules.Power4
             _client = client;
 
             _client.MessageReceived += HandleMessage;
+
+#if DEBUG
+            _isDev = true;
+#else
+            _isDev = false;
+#endif
         }
 
         ~PowerFourModule()
@@ -40,7 +47,7 @@ namespace Samousse.Modules.Power4
         [SlashCommand("power-four", "Start a new power four game with specified players, starting player is randomly chosen")]
         public async Task PowerFour(IUser YellowPlayer, IUser RedPlayer)
         {
-            if (YellowPlayer.IsBot || RedPlayer.IsBot)
+            if (!_isDev && (YellowPlayer.IsBot || RedPlayer.IsBot))
             {
                 await RespondAsync("Error: Players must be player (not bot)");
                 return;
