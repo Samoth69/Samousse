@@ -15,6 +15,12 @@ namespace Samousse.Modules.Power4
     /// </summary>
     public class PowerFourGameEngine
     {
+        // hauteur d'un puissance 4
+        public const ushort _p4Height = 6;
+
+        // larteur d'un puissance 4
+        public const ushort _p4Width = 7;
+
         private const string _emojiYellow = ":yellow_circle:";
         private const string _emojiRed = ":red_circle:";
         private const string _emojiNone = ":blue_square:";
@@ -22,6 +28,8 @@ namespace Samousse.Modules.Power4
         private readonly IUser _yellowPlayer;
         private readonly IUser _redPlayer;
         private readonly SocketThreadChannel _channel;
+        
+        // hauteur puis largeur
         private readonly EBoardPawn[,] _board;
 
         /// <summary>
@@ -29,6 +37,10 @@ namespace Samousse.Modules.Power4
         /// </summary>
         private EBoardPawn NextPlayer;
 
+        /// <summary>
+        /// List of pawn
+        /// this is used has a return value in IsBoardFinished
+        /// </summary>
         public enum EBoardPawn : ushort
         {
             None = 0,
@@ -54,12 +66,12 @@ namespace Samousse.Modules.Power4
             _channel = channel;
             _yellowPlayer = yellowPlayer;
             _redPlayer = redPlayer;
-            _board = new EBoardPawn[6, 7];
+            _board = new EBoardPawn[_p4Height, _p4Width];
 
             NextPlayer = Random.Shared.Next(0, 2) == 0 ? EBoardPawn.Yellow : EBoardPawn.Red;
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < _p4Height; i++)
             {
-                for (int j = 0; j < 7; j++)
+                for (int j = 0; j < _p4Width; j++)
                 {
                     _board[i, j] = EBoardPawn.None;
                 }
@@ -114,7 +126,7 @@ namespace Samousse.Modules.Power4
         /// <returns>height of the new pawn (0 is the top, 5 is the bottom) or -1 if full</returns>
         private int GetRow(int column)
         {
-            for (int i = 5; i >= 0; i--)
+            for (int i = _p4Height - 1; i >= 0; i--)
             {
                 if (_board[i, column] == EBoardPawn.None)
                 {
@@ -128,9 +140,9 @@ namespace Samousse.Modules.Power4
         public async Task PrintBoard()
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < _p4Height; i++)
             {
-                for (int j = 0; j < 7; j++)
+                for (int j = 0; j < _p4Width; j++)
                 {
                     sb.Append(_board[i, j] switch
                     {
@@ -144,6 +156,99 @@ namespace Samousse.Modules.Power4
             }
             sb.Append(":one::two::three::four::five::six::seven:");
             await _channel.SendMessageAsync(sb.ToString());
+        }
+
+        /// <summary>
+        /// Check if a player has won
+        /// </summary>
+        /// <param name="board">board to check</param>
+        /// <returns>
+        /// -1: tie
+        /// 0: game isn't finished
+        /// 1: yellow has won (pawn
+        /// 2: red has won
+        /// </returns>
+        public static int IsBoardFinished(EBoardPawn[,] board)
+        {
+            // check horizontal
+            for (int i = 0; i < _p4Height; i++)
+            {
+                for (int j = 0; j < _p4Width - 3; j++)
+                {
+                    if (board[i, j] != EBoardPawn.None &&
+                        board[i, j] == board[i, j + 1] &&
+                        board[i, j] == board[i, j + 2] &&
+                        board[i, j] == board[i, j + 3])
+                    {
+                        return (int)board[i, j];
+                    }
+                }
+            }
+
+            // check vertical
+            for (int i = 0; i < _p4Height - 3; i++)
+            {
+                for (int j = 0; j < _p4Width; j++)
+                {
+                    if (board[i, j] != EBoardPawn.None &&
+                        board[i, j] == board[i + 1, j] &&
+                        board[i, j] == board[i + 2, j] &&
+                        board[i, j] == board[i + 3, j])
+                    {
+                        return (int)board[i, j];
+                    }
+                }
+            }
+
+            // check diagonal
+            for (int i = 0; i < _p4Height - 3; i++)
+            {
+                for (int j = 0; j < _p4Width - 3; j++)
+                {
+                    if (board[i, j] != EBoardPawn.None &&
+                        board[i, j] == board[i + 1, j + 1] &&
+                        board[i, j] == board[i + 2, j + 2] &&
+                        board[i, j] == board[i + 3, j + 3])
+                    {
+                        return (int)board[i, j];
+                    }
+                }
+            }
+
+            // anti diagonal
+            for (int i = 0; i < _p4Height - 3; i++)
+            {
+                for (int j = 3; j < _p4Width; j++)
+                {
+                    if (board[i, j] != EBoardPawn.None &&
+                        board[i, j] == board[i + 1, j - 1] &&
+                        board[i, j] == board[i + 2, j - 2] &&
+                        board[i, j] == board[i + 3, j - 3])
+                    {
+                        return (int)board[i, j];
+                    }
+                }
+            }
+
+            // check if there is still a free space
+            for (int j = 0; j < _p4Width; j++)
+            {
+                // we are starting from the top, exiting when
+                // there is a pawn.
+                for (int i = _p4Height; i >= 0; i--)
+                {
+                    if (board[i, j] == EBoardPawn.None)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return -1;
         }
     }
 }

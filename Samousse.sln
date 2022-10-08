@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samousse", "Samousse\Samousse.csproj", "{C15F2E90-ADCB-4586-A1E7-3CD3A590EB0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samousse", "Samousse\Samousse.csproj", "{C15F2E90-ADCB-4586-A1E7-3CD3A590EB0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamousseTests", "SamousseTests\SamousseTests.csproj", "{A50FC1EB-E56A-4FCA-BD42-895ABEA67A6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{C15F2E90-ADCB-4586-A1E7-3CD3A590EB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C15F2E90-ADCB-4586-A1E7-3CD3A590EB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C15F2E90-ADCB-4586-A1E7-3CD3A590EB0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A50FC1EB-E56A-4FCA-BD42-895ABEA67A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A50FC1EB-E56A-4FCA-BD42-895ABEA67A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A50FC1EB-E56A-4FCA-BD42-895ABEA67A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A50FC1EB-E56A-4FCA-BD42-895ABEA67A6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
