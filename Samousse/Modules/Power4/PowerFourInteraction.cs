@@ -44,7 +44,7 @@ namespace Samousse.Modules.Power4
         }
 
         [RequireContext(ContextType.Guild)]
-        [SlashCommand("power-four", "Start a new power four game with specified players, starting player is randomly chosen")]
+        [SlashCommand("p4", "Start a new power four game with specified players, starting player is randomly chosen")]
         public async Task PowerFour(IUser YellowPlayer, IUser RedPlayer)
         {
             if (!_isDev && (YellowPlayer.IsBot || RedPlayer.IsBot))

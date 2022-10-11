@@ -57,9 +57,10 @@ namespace Samousse.Modules.Power4
         /// <summary>
         /// Build PowerFourGameEngine
         /// </summary>
-        /// <param name="channel"></param>
+        /// <param name="channel">id will be returned in gameFinished action</param>
         /// <param name="yellowPlayer"></param>
         /// <param name="redPlayer"></param>
+        /// <param name="gameFinished">ulong: channel id, game winner (1: yellow, 2: red, 3: tie)</param>
         /// <returns></returns>
         async public static Task<KeyValuePair<ulong, PowerFourGameEngine>> BuildPowerFourGE(SocketTextChannel channel, IUser yellowPlayer, IUser redPlayer, Action<ulong, int> gameFinished)
         {
@@ -67,6 +68,9 @@ namespace Samousse.Modules.Power4
             return new(threadChannel.Id, new PowerFourGameEngine(threadChannel, yellowPlayer, redPlayer, gameFinished));
         }
 
+        /// <summary>
+        /// see the <see cref="BuildPowerFourGE(SocketTextChannel, IUser, IUser, Action{ulong, int})">builder</see>
+        /// </summary>
         private PowerFourGameEngine(SocketThreadChannel channel, IUser yellowPlayer, IUser redPlayer, Action<ulong, int> gameFinished)
         {
             _channel = channel;
