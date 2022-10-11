@@ -28,7 +28,13 @@ namespace Samousse.Modules.Power4
         private readonly IUser _yellowPlayer;
         private readonly IUser _redPlayer;
         private readonly SocketThreadChannel _channel;
-        
+
+        /// <summary>
+        /// Used when the game is over
+        /// first parameter is threadID, second is the winner (1: yellow, 2: red, 3:tie)
+        /// </summary>
+        private readonly Action<ulong, int> _gameFinishedAction;
+
         // hauteur puis largeur
         private readonly EBoardPawn[,] _board;
 
@@ -55,18 +61,19 @@ namespace Samousse.Modules.Power4
         /// <param name="yellowPlayer"></param>
         /// <param name="redPlayer"></param>
         /// <returns></returns>
-        async public static Task<KeyValuePair<ulong, PowerFourGameEngine>> BuildPowerFourGE(SocketTextChannel channel, IUser yellowPlayer, IUser redPlayer)
+        async public static Task<KeyValuePair<ulong, PowerFourGameEngine>> BuildPowerFourGE(SocketTextChannel channel, IUser yellowPlayer, IUser redPlayer, Action<ulong, int> gameFinished)
         {
             var threadChannel = await channel.CreateThreadAsync($"Power 4: {yellowPlayer.Username} against {redPlayer.Username}");
-            return new(threadChannel.Id, new PowerFourGameEngine(threadChannel, yellowPlayer, redPlayer));
+            return new(threadChannel.Id, new PowerFourGameEngine(threadChannel, yellowPlayer, redPlayer, gameFinished));
         }
 
-        private PowerFourGameEngine(SocketThreadChannel channel, IUser yellowPlayer, IUser redPlayer)
+        private PowerFourGameEngine(SocketThreadChannel channel, IUser yellowPlayer, IUser redPlayer, Action<ulong, int> gameFinished)
         {
             _channel = channel;
             _yellowPlayer = yellowPlayer;
             _redPlayer = redPlayer;
             _board = new EBoardPawn[_p4Height, _p4Width];
+            _gameFinishedAction = gameFinished;
 
             NextPlayer = Random.Shared.Next(0, 2) == 0 ? EBoardPawn.Yellow : EBoardPawn.Red;
             for (int i = 0; i < _p4Height; i++)
@@ -112,6 +119,25 @@ namespace Samousse.Modules.Power4
                 _board[row, column] = toPlacePawn;
                 NextPlayer = NextPlayer == EBoardPawn.Yellow ? EBoardPawn.Red : EBoardPawn.Yellow;
                 await PrintBoard();
+
+                var end_res = IsBoardFinished(_board);
+                if (end_res == 1)
+                {
+                    await _channel.SendMessageAsync($"Game finished, {_yellowPlayer.Mention} won");
+                }
+                else if (end_res == 2)
+                {
+                    await _channel.SendMessageAsync($"Game finished, {_redPlayer.Mention} won");
+                }
+                else if (end_res == 3)
+                {
+                    await _channel.SendMessageAsync($"Game finished, it's a draw");
+                }
+
+                if (end_res != 0)
+                {
+                    _gameFinishedAction(_channel.Id, end_res);
+                }
             }
             else
             {
@@ -165,7 +191,7 @@ namespace Samousse.Modules.Power4
         /// <returns>
         /// -1: tie
         /// 0: game isn't finished
-        /// 1: yellow has won (pawn
+        /// 1: yellow has won
         /// 2: red has won
         /// </returns>
         public static int IsBoardFinished(EBoardPawn[,] board)

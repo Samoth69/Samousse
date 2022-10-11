@@ -56,7 +56,10 @@ namespace Samousse.Modules.Power4
             if (Context.Channel is SocketTextChannel stc && stc.GetChannelType() == ChannelType.Text)
             {
                 await RespondAsync("Ok");
-                var (threadID, engine) = await PowerFourGameEngine.BuildPowerFourGE(stc, YellowPlayer, RedPlayer);
+                var (threadID, engine) = await PowerFourGameEngine.BuildPowerFourGE(stc, YellowPlayer, RedPlayer, (id, _) =>
+                {
+                    _engines.Remove(id);
+                });
                 _engines.Add(threadID, engine);
             }
             else
