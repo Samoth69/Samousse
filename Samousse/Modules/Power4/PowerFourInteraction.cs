@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Serilog;
 
 namespace Samousse.Modules.Power4
 {
@@ -24,6 +25,7 @@ namespace Samousse.Modules.Power4
             _client = client;
 
             _client.MessageReceived += HandleMessage;
+            _client.ThreadDeleted += HandleThreadDeleted;
 
 #if DEBUG
             _isDev = true;
@@ -80,6 +82,16 @@ namespace Samousse.Modules.Power4
             {
                 await engine.ReceiveMessage(msg.Author, msg.Content);
             }
+        }
+
+        private Task HandleThreadDeleted(Cacheable<SocketThreadChannel, ulong> arg)
+        {
+            if (_engines.ContainsKey(arg.Value.Id))
+            {
+                Log.Debug($"Thread {arg.Value.Id} was deleted, removing from memory");
+                _engines.Remove(arg.Value.Id);
+            }
+            return Task.CompletedTask;
         }
     }
 }
