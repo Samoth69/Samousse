@@ -87,10 +87,17 @@ namespace Samousse.Modules.Power4
                     _board[i, j] = EBoardPawn.None;
                 }
             }
+        }
 
-            _channel.SendMessageAsync($"Ready to play\n\n" +
+        /// <summary>
+        /// Should be called once before the player type
+        /// </summary>
+        public async Task SendStartMessages()
+        {
+            await _channel.SendMessageAsync($"Ready to play\n\n" +
                 $"How to play: type from 1 to 7 to place your pawn in the corresponding column\n\n" +
                 $"It's {(NextPlayer == EBoardPawn.Yellow ? _yellowPlayer.Mention : _redPlayer.Mention)} turn");
+            await PrintBoard();
         }
 
         public async Task ReceiveMessage(IUser user, string msg)

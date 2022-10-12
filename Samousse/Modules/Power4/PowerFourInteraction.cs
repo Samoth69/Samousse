@@ -69,6 +69,7 @@ namespace Samousse.Modules.Power4
                     _engines.Remove(id);
                 });
                 _engines.Add(threadID, engine);
+                await engine.SendStartMessages();
             }
             else
             {
