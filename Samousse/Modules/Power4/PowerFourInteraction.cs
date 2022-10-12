@@ -55,6 +55,12 @@ namespace Samousse.Modules.Power4
                 return;
             }
 
+            if (YellowPlayer.Id == RedPlayer.Id)
+            {
+                await RespondAsync("Error: Players must be different");
+                return;
+            }
+
             if (Context.Channel is SocketTextChannel stc && stc.GetChannelType() == ChannelType.Text)
             {
                 await RespondAsync("Ok");
