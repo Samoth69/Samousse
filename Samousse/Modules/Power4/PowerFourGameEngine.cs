@@ -28,6 +28,7 @@ namespace Samousse.Modules.Power4
         private readonly IUser _yellowPlayer;
         private readonly IUser _redPlayer;
         private readonly SocketThreadChannel _channel;
+        private readonly DateTime _startTime;
 
         /// <summary>
         /// Used when the game is over
@@ -55,6 +56,18 @@ namespace Samousse.Modules.Power4
         }
 
         /// <summary>
+        /// Time when the game technically started
+        /// </summary>
+        public DateTime StartTime { get => _startTime; }
+
+        /// <summary>
+        /// Will be true if the game is finished (either tie or one player won)
+        /// </summary>
+        public bool IsFinished { get; private set; }
+
+        public ulong ChannelId { get => _channel.Id; }
+
+        /// <summary>
         /// Build PowerFourGameEngine
         /// </summary>
         /// <param name="channel">id will be returned in gameFinished action</param>
@@ -78,6 +91,7 @@ namespace Samousse.Modules.Power4
             _redPlayer = redPlayer;
             _board = new EBoardPawn[_p4Height, _p4Width];
             _gameFinishedAction = gameFinished;
+            _startTime = DateTime.Now;
 
             NextPlayer = Random.Shared.Next(0, 2) == 0 ? EBoardPawn.Yellow : EBoardPawn.Red;
             for (int i = 0; i < _p4Height; i++)
@@ -97,6 +111,7 @@ namespace Samousse.Modules.Power4
             await _channel.SendMessageAsync($"Ready to play\n\n" +
                 $"How to play: type from 1 to 7 to place your pawn in the corresponding column\n\n" +
                 $"It's {(NextPlayer == EBoardPawn.Yellow ? _yellowPlayer.Mention : _redPlayer.Mention)} turn");
+            await _channel.SendMessageAsync("Note: the game will be deleted after an hour");
             await PrintBoard();
         }
 
@@ -147,6 +162,7 @@ namespace Samousse.Modules.Power4
 
                 if (end_res != 0)
                 {
+                    IsFinished = true;
                     _gameFinishedAction(_channel.Id, end_res);
                 }
             }
@@ -286,6 +302,18 @@ namespace Samousse.Modules.Power4
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// Will delete the thread channel
+        /// Should be called sometime after the game is done
+        /// </summary>
+        public async Task DestroyChannel()
+        {
+            if (_channel != null)
+            {
+                await _channel.DeleteAsync();
+            }
         }
     }
 }
