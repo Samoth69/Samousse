@@ -95,15 +95,20 @@ namespace Samousse.Modules.Power4
 
         public async Task ReceiveMessage(IUser user, string msg)
         {
-            var toPlacePawn = user.Id == _yellowPlayer.Id ? EBoardPawn.Yellow : EBoardPawn.Red;
-            if (toPlacePawn != NextPlayer)
+            if (msg.Length > 3)
             {
-                await _channel.SendMessageAsync($"It's not your turn {user.Mention}");
                 return;
             }
 
             if (int.TryParse(msg, out var column))
             {
+                var toPlacePawn = user.Id == _yellowPlayer.Id ? EBoardPawn.Yellow : EBoardPawn.Red;
+                if (toPlacePawn != NextPlayer)
+                {
+                    await _channel.SendMessageAsync($"It's not your turn {user.Mention}");
+                    return;
+                }
+
                 // on user side, we are working from 1 to 7, but on our side, we are working from 0 to 6
                 column--;
 
@@ -142,10 +147,6 @@ namespace Samousse.Modules.Power4
                 {
                     _gameFinishedAction(_channel.Id, end_res);
                 }
-            }
-            else
-            {
-                await _channel.SendMessageAsync($"Invalid column {user.Mention}");
             }
         }
 
@@ -263,18 +264,10 @@ namespace Samousse.Modules.Power4
             // check if there is still a free space
             for (int j = 0; j < _p4Width; j++)
             {
-                // we are starting from the top, exiting when
-                // there is a pawn.
-                for (int i = _p4Height; i >= 0; i--)
+                // check if the top pawn is empty or not
+                if (board[_p4Height - 1, j] == EBoardPawn.None)
                 {
-                    if (board[i, j] == EBoardPawn.None)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    return 0;
                 }
             }
 

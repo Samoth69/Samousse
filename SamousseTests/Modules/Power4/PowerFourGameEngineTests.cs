@@ -82,23 +82,52 @@ namespace Samousse.Modules.Power4.Tests
 
             Assert.AreEqual((ushort)pawn, IsBoardFinished(board1));
 
-            //board1 = GetEmptyBoard();
-            //for (int i = 0; i < _p4Height; i++)
-            //{
-            //    for (int j = 0; j < _p4Width; j += 2)
-            //    {
-            //        board1[i, j] = (EBoardPawn)(j % 2) + 1;
-            //        if (_p4Width - j - 1 > 0)
-            //            board1[i, j + 1] = (EBoardPawn)((j + 1) % 2) + 1;
-            //    }
-            //}
+            board1 = GetEmptyBoard();
+            EBoardPawn[] line1 = new EBoardPawn[]
+            {
+                EBoardPawn.Yellow,
+                EBoardPawn.Yellow,
+                EBoardPawn.Red,
+                EBoardPawn.Red,
+                EBoardPawn.Yellow,
+                EBoardPawn.Yellow,
+                EBoardPawn.Red,
+            };
+            EBoardPawn[] line2 = new EBoardPawn[]
+            {
+                EBoardPawn.Red,
+                EBoardPawn.Red,
+                EBoardPawn.Yellow,
+                EBoardPawn.Yellow,
+                EBoardPawn.Red,
+                EBoardPawn.Red,
+                EBoardPawn.Yellow,
+            };
 
-            //Assert.AreEqual(-1, IsBoardFinished(board1));
+            for (int i = 0; i < _p4Height; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    for (int j = 0; j < _p4Width; j++)
+                    {
+                        board1[i, j] = line1[j];
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < _p4Width; j++)
+                    {
+                        board1[i, j] = line2[j];
+                    }
+                }
+            }
+
+            Assert.AreEqual(-1, IsBoardFinished(board1));
 
             //removing top piece
-            //board1[_p4Height - 1, 4] = EBoardPawn.None;
+            board1[_p4Height - 1, 4] = EBoardPawn.None;
 
-            //Assert.AreEqual(0, IsBoardFinished(board1));
+            Assert.AreEqual(0, IsBoardFinished(board1));
         }
 
     }
