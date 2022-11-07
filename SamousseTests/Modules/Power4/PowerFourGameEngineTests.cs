@@ -25,6 +25,53 @@ namespace Samousse.Modules.Power4.Tests
             {
                 TestForColor(item);
             }
+
+            var board1 = GetEmptyBoard();
+            var line1 = new EBoardPawn[]
+            {
+                EBoardPawn.Yellow,
+                EBoardPawn.Yellow,
+                EBoardPawn.Red,
+                EBoardPawn.Red,
+                EBoardPawn.Yellow,
+                EBoardPawn.Yellow,
+                EBoardPawn.Red,
+            };
+            var line2 = new EBoardPawn[]
+            {
+                EBoardPawn.Red,
+                EBoardPawn.Red,
+                EBoardPawn.Yellow,
+                EBoardPawn.Yellow,
+                EBoardPawn.Red,
+                EBoardPawn.Red,
+                EBoardPawn.Yellow,
+            };
+
+            for (int i = 0; i < _p4Height; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    for (int j = 0; j < _p4Width; j++)
+                    {
+                        board1[i, j] = line1[j];
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < _p4Width; j++)
+                    {
+                        board1[i, j] = line2[j];
+                    }
+                }
+            }
+
+            Assert.AreEqual(-1, IsBoardFinished(board1));
+
+            //removing top piece
+            board1[_p4Height - 1, 4] = EBoardPawn.None;
+
+            Assert.AreEqual(0, IsBoardFinished(board1));
         }
 
         /// <summary>
@@ -81,53 +128,6 @@ namespace Samousse.Modules.Power4.Tests
             board1[0, 3] = pawn;
 
             Assert.AreEqual((ushort)pawn, IsBoardFinished(board1));
-
-            board1 = GetEmptyBoard();
-            EBoardPawn[] line1 = new EBoardPawn[]
-            {
-                EBoardPawn.Yellow,
-                EBoardPawn.Yellow,
-                EBoardPawn.Red,
-                EBoardPawn.Red,
-                EBoardPawn.Yellow,
-                EBoardPawn.Yellow,
-                EBoardPawn.Red,
-            };
-            EBoardPawn[] line2 = new EBoardPawn[]
-            {
-                EBoardPawn.Red,
-                EBoardPawn.Red,
-                EBoardPawn.Yellow,
-                EBoardPawn.Yellow,
-                EBoardPawn.Red,
-                EBoardPawn.Red,
-                EBoardPawn.Yellow,
-            };
-
-            for (int i = 0; i < _p4Height; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    for (int j = 0; j < _p4Width; j++)
-                    {
-                        board1[i, j] = line1[j];
-                    }
-                }
-                else
-                {
-                    for (int j = 0; j < _p4Width; j++)
-                    {
-                        board1[i, j] = line2[j];
-                    }
-                }
-            }
-
-            Assert.AreEqual(-1, IsBoardFinished(board1));
-
-            //removing top piece
-            board1[_p4Height - 1, 4] = EBoardPawn.None;
-
-            Assert.AreEqual(0, IsBoardFinished(board1));
         }
 
     }

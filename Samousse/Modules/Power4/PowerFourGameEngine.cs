@@ -18,7 +18,7 @@ namespace Samousse.Modules.Power4
         // hauteur d'un puissance 4
         public const ushort _p4Height = 6;
 
-        // larteur d'un puissance 4
+        // largeur d'un puissance 4
         public const ushort _p4Width = 7;
 
         private const string _emojiYellow = ":yellow_circle:";
