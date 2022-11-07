@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Serilog;
+using System.Collections.Concurrent;
 
 namespace Samousse.Modules.Power4
 {
@@ -37,6 +38,7 @@ namespace Samousse.Modules.Power4
         ~PowerFourModule()
         {
             _client.MessageReceived -= HandleMessage;
+            _client.ThreadDeleted -= HandleThreadDeleted;
         }
 
         [SlashCommand("echo", "echo input text")]
@@ -55,19 +57,51 @@ namespace Samousse.Modules.Power4
                 return;
             }
 
+            if (YellowPlayer.Id == RedPlayer.Id)
+            {
+                await RespondAsync("Error: Players must be different");
+                return;
+            }
+
             if (Context.Channel is SocketTextChannel stc && stc.GetChannelType() == ChannelType.Text)
             {
                 await RespondAsync("Ok");
                 var (threadID, engine) = await PowerFourGameEngine.BuildPowerFourGE(stc, YellowPlayer, RedPlayer, (id, _) =>
                 {
-                    _engines.Remove(id);
+                    //_engines.Remove(id);
                 });
                 _engines.Add(threadID, engine);
+                await engine.SendStartMessages();
             }
             else
             {
                 await RespondAsync("Error: Invalid channel type, make sure you are in a server text channel");
             }
+
+            // delete game that are older than 1 hour
+            await Task.Run(async () =>
+            {
+                var currentTime = DateTime.Now;
+                foreach (var item in _engines)
+                {
+                    // limit game time to 1 hour
+                    if (item.Value.StartTime < currentTime - TimeSpan.FromMinutes(60))
+                    {
+                        _engines.Remove(item.Key, out var deletedObject);
+                        if (deletedObject != null)
+                        {
+                            try
+                            {
+                                await deletedObject.DestroyChannel();
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error("Failed to delete channel {channelID}: {error}", deletedObject.ChannelId, e);
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         private async Task HandleMessage(SocketMessage msg)
