@@ -43,10 +43,10 @@ namespace Samousse
             // Since Global Commands take around 1 hour to register, we should use a test guild to instantly update and test our commands.
 #if DEBUG
             // crashtest samousse
-            //await _handler.RegisterCommandsToGuildAsync(883418664777437224, true);
+            await _handler.RegisterCommandsToGuildAsync(883418664777437224, true);
 
-            // snap
-            await _handler.RegisterCommandsToGuildAsync(940731520488988764, true);
+            // Puissance 69
+            //await _handler.RegisterCommandsToGuildAsync(940731520488988764, true);
 #else
             await _handler.RegisterCommandsGloballyAsync(true);
 #endif
