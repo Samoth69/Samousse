@@ -16,7 +16,11 @@ namespace Samousse
         {
             Log.Logger = new LoggerConfiguration()
                             .WriteTo.Console()
+#if DEBUG
+                            .MinimumLevel.Debug()
+#endif
                             .CreateLogger();
+
 
             _serviceProvider = new ServiceCollection()
                 .AddSingleton(new ConfigLoader().Config)
@@ -40,6 +44,8 @@ namespace Samousse
                 Log.Fatal("Config is null, make sure config file is correct and readable by the bot");
                 return;
             }
+
+            Log.Debug("We are in debug mode");
 
             var _client = _serviceProvider.GetRequiredService<DiscordSocketClient>();
             _client.Log += Utils.DiscordLog;
