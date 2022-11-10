@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 
 namespace Samousse.Modules.Power4
 {
-    public class PowerFourModule : InteractionModuleBase<SocketInteractionContext>, IDisposable
+    public class PowerFourModule : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly InteractionHandler _handler;
         private readonly DiscordSocketClient _client;
@@ -18,7 +18,7 @@ namespace Samousse.Modules.Power4
         /// </summary>
         private readonly Dictionary<ulong, PowerFourGameEngine> _engines;
 
-        public PowerFourModule(InteractionHandler handler, DiscordSocketClient client) 
+        public PowerFourModule(InteractionHandler handler, DiscordSocketClient client)
         {
             _engines = new();
 
@@ -33,13 +33,6 @@ namespace Samousse.Modules.Power4
 #else
             _isDev = false;
 #endif
-        }
-
-        public void Dispose()
-        {
-            _client.MessageReceived -= HandleMessage;
-            _client.ThreadDeleted -= HandleThreadDeleted;
-            GC.SuppressFinalize(this); //Hey, GC: don't bother calling finalize later
         }
 
         [SlashCommand("echo", "echo input text")]
