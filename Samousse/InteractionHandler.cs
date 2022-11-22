@@ -50,6 +50,7 @@ namespace Samousse
 #else
             await _handler.RegisterCommandsGloballyAsync(true);
 #endif
+            // TODO get service.init()
         }
 
         private async Task HandleInteraction(SocketInteraction interaction)

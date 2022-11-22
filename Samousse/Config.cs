@@ -12,40 +12,15 @@ namespace Samousse
     {
         public string Token { get; set; }
         public ulong[] AllowedGuilds { get; set; }
-        //public ReponseConfig Reponse { get; set; }
-
-        //public class ReponseConfig
-        //{
-        //    /// <summary>
-        //    /// True if we should enable this module
-        //    /// </summary>
-        //    public bool Enable { get; set; }
-
-        //    /// <summary>
-        //    /// Delay between two answers
-        //    /// </summary>
-        //    public int DelayBetweenAnswers { get; set; }
-
-        //    public ContextAnswers[]? Answers { get; set; }
-            
-        //    /// <summary>
-        //    /// Contient une réponse possible pour le message donné
-        //    /// </summary>
-        //    public class ContextAnswers
-        //    {
-        //        /// <summary>
-        //        /// Regex à match pour savoir quoi répondre
-        //        /// </summary>
-        //        public string? Regex { get; set; }
-        //        public string[]? Answers { get; set; }
-        //        public string[]? Reactions { get; set; }
-        //    }
-        //}
     }
+
 
     public class ConfigLoader
     {
-        private static string _configFileName = $"data{Path.DirectorySeparatorChar}config.json";
+        public static string ConfFolder = "Data";
+        public static string ConfFile = "config.json";
+        public static string ConfPath = Path.Combine(ConfFolder, ConfFile);
+
         private Config _config;
 
         public Config Config => _config;
@@ -53,7 +28,7 @@ namespace Samousse
         // if _config is null, the app should stop and not continue
         public ConfigLoader()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_configFileName));
+            Directory.CreateDirectory(ConfFolder);
             LoadConfig();
         }
 
@@ -61,7 +36,7 @@ namespace Samousse
         {
             if (_config == null)
             {
-                string path = _configFileName;
+                string path = ConfPath;
                 try
                 {
                     if (File.Exists(path))
