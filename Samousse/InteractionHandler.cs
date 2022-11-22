@@ -46,7 +46,7 @@ namespace Samousse
             await _handler.RegisterCommandsToGuildAsync(883418664777437224, true);
 
             // Puissance 69
-            await _handler.RegisterCommandsToGuildAsync(940731520488988764, true);
+            // await _handler.RegisterCommandsToGuildAsync(940731520488988764, true);
 #else
             await _handler.RegisterCommandsGloballyAsync(true);
 #endif
