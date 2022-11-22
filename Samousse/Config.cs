@@ -17,7 +17,7 @@ namespace Samousse
 
     public class ConfigLoader
     {
-        public static string ConfFolder = "Data";
+        public static string ConfFolder = "data";
         public static string ConfFile = "config.json";
         public static string ConfPath = Path.Combine(ConfFolder, ConfFile);
 
