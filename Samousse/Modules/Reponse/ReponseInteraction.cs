@@ -12,22 +12,25 @@ namespace Samousse.Modules.Reponse
 {
     public class ReponseContent
     {
-        public string[] answers { get; set; }
+        public bool Enabled { get; set; }
+        public string[] Answers { get; set; }
+
+        public ReponseContent()
+        {
+            Enabled = true;
+            Answers = new string[0];
+        }
     }
 
     public class ReponseInteraction : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly DiscordSocketClient _client;
 
-        private static ReponseContent _responses;
+        private static ReponseContent _config;
+
+        private Random _random = new Random(Environment.TickCount);
 
         public ReponseInteraction(DiscordSocketClient client)
-        {
-            _client = client;
-            _client.MessageReceived += HandleMessage;
-        }
-
-        public static async Task LateInit()
         {
             string path = Path.Combine(ConfigLoader.ConfFolder, "reponse.json");
             if (File.Exists(path))
@@ -35,31 +38,50 @@ namespace Samousse.Modules.Reponse
                 Log.Debug($"Loading {path}");
                 using (var fs = File.OpenRead(path))
                 {
-                    await JsonSerializer.DeserializeAsync<ReponseContent>(fs, Utils.JsonSerializerOptionsIndented);
+                    var res = JsonSerializer.Deserialize<ReponseContent>(fs, Utils.JsonSerializerOptionsIndented);
+                    if (res is not null)
+                    {
+                        _config = res;
+                    }
+                    else
+                    {
+                        Log.Error($"Failed to load {path}");
+                    }
                 }
             }
             else
             {
                 Log.Warning($"No {path} file found, creating one");
                 ReponseContent rc = new();
-                rc.answers = new string[] { "coucou", "patacaisse" };
-                _responses = rc;
+                rc.Enabled = false;
+                rc.Answers = new string[] { "coucou", "patacaisse" };
+                _config = rc;
 
                 using (var fs = File.OpenWrite(path))
                 {
-                    await JsonSerializer.SerializeAsync(fs, rc, Utils.JsonSerializerOptionsIndented);
+                    JsonSerializer.Serialize(fs, rc, Utils.JsonSerializerOptionsIndented);
                 }
             }
+
+            if (_config is null)
+            {
+                Log.Fatal("ReponseContent is null, make sure config file is correct and readable by the bot");
+                return;
+            }
+
+            _client = client;
+            _client.MessageReceived += HandleMessage;
         }
 
         private Task HandleMessage(SocketMessage arg)
         {
-            if (arg.Author.IsBot)
+            if (arg.Author.IsBot || !_config.Enabled)
                 return Task.CompletedTask;
 
-            if (arg.Content.Contains("samousse", StringComparison.CurrentCultureIgnoreCase) || arg.MentionedUsers.Contains(_client.CurrentUser))
+            if (arg.Content.Contains("samousse", StringComparison.CurrentCultureIgnoreCase) || arg.MentionedUsers.Where(x => x.Id == _client.CurrentUser.Id).Any())
             {
-                arg.Channel.SendMessageAsync(":thinking:");
+                var i = _random.Next(0, _config.Answers.Length);
+                arg.Channel.SendMessageAsync(_config.Answers[i]);
             }
 
             return Task.CompletedTask;

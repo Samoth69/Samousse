@@ -3,6 +3,8 @@ using Discord.WebSocket;
 using Discord;
 using System.Reflection;
 using Serilog;
+using Microsoft.Extensions.DependencyInjection;
+using Samousse.Modules.Reponse;
 
 namespace Samousse
 {
@@ -50,7 +52,6 @@ namespace Samousse
 #else
             await _handler.RegisterCommandsGloballyAsync(true);
 #endif
-            // TODO get service.init()
         }
 
         private async Task HandleInteraction(SocketInteraction interaction)
