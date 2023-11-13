@@ -1,12 +1,7 @@
 ﻿using Discord.Interactions;
 using Discord.WebSocket;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Samousse.Modules.Reponse
 {
@@ -18,7 +13,7 @@ namespace Samousse.Modules.Reponse
         public ReponseContent()
         {
             Enabled = true;
-            Answers = new string[0];
+            Answers = Array.Empty<string>();
         }
     }
 
@@ -28,7 +23,7 @@ namespace Samousse.Modules.Reponse
 
         private static ReponseContent _config;
 
-        private Random _random = new Random(Environment.TickCount);
+        private readonly Random _random = new Random(Environment.TickCount);
 
         public ReponseInteraction(DiscordSocketClient client)
         {
